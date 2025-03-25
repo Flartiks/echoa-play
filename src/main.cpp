@@ -82,9 +82,6 @@ int main(int, char**)
         ImGui::Text("Album: %s", album.c_str());
         ImGui::Text("Year: %d", year);
 
-        // Add the label in the top-right corner
-
-
         if (ImGui::Button("Load File")) {
             std::cout << "Load File button clicked" << std::endl;
             if (strcmp(audiopath, audioFilePath) != 0) {
