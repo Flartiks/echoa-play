@@ -2,7 +2,7 @@
 
 This is the 1.1 version of the fastPlayMP3. Added album art extractor.
 
-![Player Screenshot](screenshots/player.png)
+![Player Screenshot](screenshots/player1.1.png)
 
 ## License
 

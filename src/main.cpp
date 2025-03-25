@@ -22,7 +22,7 @@ GLuint LoadTextureFromFile(const char* filename)
         filename,
         SOIL_LOAD_AUTO,
         SOIL_CREATE_NEW_ID,
-        0 // Уберите флаг SOIL_FLAG_INVERT_Y
+        0
     );
 
     if (texture == 0)
@@ -61,7 +61,7 @@ int main(int, char**)
     ImGui::StyleColorsDark();
 
     ImGuiStyle& style = ImGui::GetStyle();
-    style.Colors[ImGuiCol_WindowBg] = ImVec4(0.0f, 0.0f, 0.0f, 1.0f); // Непрозрачный фон окна ImGui
+    style.Colors[ImGuiCol_WindowBg] = ImVec4(0.0f, 0.0f, 0.0f, 1.0f);
     style.Colors[ImGuiCol_TitleBg] = ImVec4(1.0f, 0.5f, 0.0f, 1.0f); 
     style.Colors[ImGuiCol_TitleBgActive] = ImVec4(1.0f, 0.5f, 0.0f, 1.0f); 
     style.Colors[ImGuiCol_TitleBgCollapsed] = ImVec4(1.0f, 0.5f, 0.0f, 1.0f); 
@@ -113,10 +113,10 @@ int main(int, char**)
             if (strcmp(audiopath, audioFilePath.c_str()) != 0) {
                 audioFilePath = audiopath;
                 std::cout << "Attempting to load file: " << audioFilePath << std::endl;
-                CleanupOpenAL(); // Очистка OpenAL перед повторной инициализацией
-                if (!InitOpenAL()) { // Повторная инициализация OpenAL
+                CleanupOpenAL();
+                if (!InitOpenAL()) {
                     fprintf(stderr, "Failed to initialize OpenAL\n");
-                    continue; // Пропустить текущую итерацию цикла
+                    continue;
                 }
                 ReadMP3Tags(audioFilePath.c_str(), &title, &artist, &album, &year);
                 std::string imagePath = audioFilePath.substr(0, audioFilePath.size() - 4) + ".png";
@@ -124,7 +124,7 @@ int main(int, char**)
                 
                 if (!LoadMP3File(audioFilePath.c_str(), &buffer)) {
                     fprintf(stderr, "Failed to load audio file\n");
-                    continue; // Пропустить текущую итерацию цикла
+                    continue;
                 } else {
                     std::cout << "File loaded successfully" << std::endl;
                     alSourceStop(source);
@@ -172,8 +172,15 @@ int main(int, char**)
         ImGui::Text("Made by Flartiks");
 
         if (albumArtTexture != 0) {
-            ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 260); // Поднимите изображение на 300 пикселей выше
-            ImGui::Image((ImTextureID)(intptr_t)albumArtTexture, ImVec2(250, 250), ImVec2(0, 0), ImVec2(1, 1)); // Верните координаты текстуры в нормальное состояние
+            ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 260);
+            ImGui::Image((ImTextureID)(intptr_t)albumArtTexture, ImVec2(250, 250), ImVec2(0, 0), ImVec2(1, 1));
+        } else {
+            ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 260);
+            ImVec2 p = ImGui::GetCursorScreenPos();
+            ImVec2 size = ImVec2(250, 250);
+            ImGui::Dummy(size);
+            ImDrawList* draw_list = ImGui::GetWindowDrawList();
+            draw_list->AddRect(p, ImVec2(p.x + size.x, p.y + size.y), IM_COL32(255, 165, 0, 255));
         }
 
         ImGui::End();
@@ -182,7 +189,7 @@ int main(int, char**)
         int display_w, display_h;
         glfwGetFramebufferSize(window, &display_w, &display_h);
         glViewport(0, 0, display_w, display_h);
-        glClearColor(0.0f, 0.0f, 0.0f, 0.0f); // Прозрачный фон окна GLFW
+        glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
