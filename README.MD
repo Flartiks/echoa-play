@@ -36,7 +36,7 @@ Please see the `LICENSES` directory for more information.
      cmake -B build
      cmake --build build
      ```
-   - The executable will be generated at `build/fastPlay.exe`.
+   - The executable will be generated at `build/fastPlayMP3.exe`.
 
 2. **Building with MinGW**:
    - If you are using MinGW, use the following commands:
@@ -44,10 +44,11 @@ Please see the `LICENSES` directory for more information.
      cmake -B build -G "MinGW Makefiles"
      cmake --build build
      ```
-   - The executable will be generated at `build/fastPlay.exe`.
+   - The executable will be generated at `build/fastPlayMP3.exe`.
 
 ### Running the Application
 
-- After building, navigate to the `build` directory:
+- After building, navigate to the `build` directory and run exe:
   ```bash
   cd build
+  ./fastPlayMP3.exe
