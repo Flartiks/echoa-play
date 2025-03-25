@@ -21,10 +21,18 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(imgui)
 
+# Add SOIL library
+FetchContent_Declare(
+  soil
+  GIT_REPOSITORY https://github.com/littlstar/soil.git
+  GIT_TAG master
+)
+FetchContent_MakeAvailable(soil)
+
 find_package(OpenGL REQUIRED)
 
 add_executable(${PROJECT_NAME}
-    src/main.cpp src/playmusic.cpp src/tagRead.cpp
+    src/main.cpp src/playmusic.cpp src/tagRead.cpp src/albumArt.cpp
 )
 
 target_sources(${PROJECT_NAME} PRIVATE
@@ -39,16 +47,38 @@ target_sources(${PROJECT_NAME} PRIVATE
 set(OPENAL_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/include/OpenAL")
 set(OPENAL_LIBRARY "${CMAKE_CURRENT_SOURCE_DIR}/lib/OpenAL/OpenAL32.lib")
 
+set(TAGLIB_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/include/taglib")
+set(TAGLIB_LIBRARY_DIR "${CMAKE_CURRENT_SOURCE_DIR}/lib/taglib")
+
+
 target_include_directories(${PROJECT_NAME} PRIVATE
     ${imgui_SOURCE_DIR}
     ${imgui_SOURCE_DIR}/backends
     ${OPENAL_INCLUDE_DIR}
     "${CMAKE_CURRENT_SOURCE_DIR}/include"
+    ${soil_SOURCE_DIR}/src
+    ${soil_SOURCE_DIR}/include
+    ${TAGLIB_INCLUDE_DIR}
 )
+
+# Build SOIL library
+add_library(SOIL STATIC
+    ${soil_SOURCE_DIR}/src/SOIL.c
+    ${soil_SOURCE_DIR}/src/image_DXT.c
+    ${soil_SOURCE_DIR}/src/image_helper.c
+    ${soil_SOURCE_DIR}/src/stb_image_aug.c
+)
+
+target_include_directories(SOIL PUBLIC ${soil_SOURCE_DIR}/src ${soil_SOURCE_DIR}/include)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
     glfw
     OpenGL::GL
     ${OPENAL_LIBRARY}
-    "${CMAKE_CURRENT_SOURCE_DIR}/lib/libmpg123-0.dll" 
+    "${CMAKE_CURRENT_SOURCE_DIR}/libmpg123-0.dll"
+    "${CMAKE_CURRENT_SOURCE_DIR}/libtag.dll"
+    "${CMAKE_CURRENT_SOURCE_DIR}/openAL32.dll"
+    SOIL
+    OpenGL::GL
+
 )

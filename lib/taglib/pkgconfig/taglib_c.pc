@@ -1,0 +1,12 @@
+prefix=E:/extractALBUMart/taglib-1.12-beta-1/build/release
+exec_prefix=E:/extractALBUMart/taglib-1.12-beta-1/build/release
+libdir=E:/extractALBUMart/taglib-1.12-beta-1/build/release/lib
+includedir=E:/extractALBUMart/taglib-1.12-beta-1/build/release/include
+
+
+Name: TagLib C Bindings
+Description: Audio meta-data library (C bindings)
+Requires: taglib
+Version: 1.11.1
+Libs: -LE:/extractALBUMart/taglib-1.12-beta-1/build/release/lib -ltag_c
+Cflags: -IE:/extractALBUMart/taglib-1.12-beta-1/build/release/include/taglib 
