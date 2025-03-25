@@ -1,0 +1,169 @@
+#include <GLFW/glfw3.h>
+#include "imgui.h"
+#include "backends/imgui_impl_glfw.h"
+#include "backends/imgui_impl_opengl3.h"
+#include <cstdio>
+#include <string>
+#include "playmusic.h"
+#include "tagRead.h"
+using std::string;
+
+void glfw_error_callback(int error, const char* description)
+{
+    fprintf(stderr, "Glfw Error %d: %s\n", error, description);
+}
+
+int main(int, char**)
+{
+    glfwSetErrorCallback(glfw_error_callback);
+    if (!glfwInit())
+        return 1;
+
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, GLFW_TRUE); 
+    glfwWindowHint(GLFW_DECORATED, GLFW_FALSE); 
+
+    GLFWwindow* window = glfwCreateWindow(650, 300, "hi", NULL, NULL);
+    if (window == NULL)
+        return 1;
+    glfwMakeContextCurrent(window);
+    glfwSwapInterval(1);
+
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGuiIO& io = ImGui::GetIO(); (void)io;
+    ImGui::StyleColorsDark();
+
+    ImGuiStyle& style = ImGui::GetStyle();
+    style.Colors[ImGuiCol_WindowBg] = ImVec4(0.0f, 0.0f, 0.0f, 1.0f); 
+    style.Colors[ImGuiCol_TitleBg] = ImVec4(1.0f, 0.5f, 0.0f, 1.0f); 
+    style.Colors[ImGuiCol_TitleBgActive] = ImVec4(1.0f, 0.5f, 0.0f, 1.0f); 
+    style.Colors[ImGuiCol_TitleBgCollapsed] = ImVec4(1.0f, 0.5f, 0.0f, 1.0f); 
+    style.TabRounding = 5.f;
+    style.FrameRounding = 5.f;
+    style.GrabRounding = 5.f;
+    style.WindowRounding = 5.f;
+    style.PopupRounding = 5.f;
+
+    ImGui_ImplGlfw_InitForOpenGL(window, true);
+    ImGui_ImplOpenGL3_Init("#version 330");
+
+    if (!InitOpenAL())
+    {
+        fprintf(stderr, "Failed to initialize OpenAL\n");
+        return 1;
+    }
+
+    char* audioFilePath = "";
+    const int bufferSize = 256;
+    char audiopath[bufferSize] = {0};
+    alSourcei(source, AL_BUFFER, buffer);
+
+    std::string title, artist, album;
+    int year = 0;
+
+    while (!glfwWindowShouldClose(window))
+    {
+        glfwPollEvents();
+
+        ImGui_ImplOpenGL3_NewFrame();
+        ImGui_ImplGlfw_NewFrame();
+        ImGui::NewFrame();
+        ImGui::SetNextWindowSize(ImVec2(550, 230));
+
+        ImGui::Begin("mp3 player", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove);
+        ImGui::Text("To play song, you need to load it first. Enter the path to the file.");
+        audiopath[bufferSize - 1] = '\0';
+        ImGui::InputText("File Path", audiopath, sizeof(audiopath));
+        ImGui::Text("Title: %s", title.c_str());
+        ImGui::Text("Artist: %s", artist.c_str());
+        ImGui::Text("Album: %s", album.c_str());
+        ImGui::Text("Year: %d", year);
+
+        // Add the label in the top-right corner
+
+
+        if (ImGui::Button("Load File")) {
+            std::cout << "Load File button clicked" << std::endl;
+            if (strcmp(audiopath, audioFilePath) != 0) {
+                audioFilePath = audiopath;
+                std::cout << "Attempting to load file: " << audioFilePath << std::endl;
+                CleanupOpenAL();
+                InitOpenAL();
+                ReadMP3Tags(audioFilePath, &title, &artist, &album, &year);
+                if (!LoadMP3File(audioFilePath, &buffer)) {
+                    fprintf(stderr, "Failed to load audio file\n");
+
+                } else {
+                    std::cout << "File loaded successfully" << std::endl;
+        
+                    alSourceStop(source);
+                    alSourcei(source, AL_BUFFER, 0); 
+        
+                    alSourcei(source, AL_BUFFER, buffer);
+        
+                    ALenum error = alGetError();
+                    if (error != AL_NO_ERROR) {
+                        std::cerr << "OpenAL error after setting buffer: " << error << std::endl;
+                    } else {
+                        std::cout << "Buffer set successfully" << std::endl;
+                    }
+                }
+            }
+        }
+        
+
+        if (ImGui::Button("Play"))
+        {
+            alSourcePlay(source);
+            printf("Play button clicked!\n");
+        }
+        if (ImGui::Button("Stop"))
+        {
+            alSourceStop(source);
+            printf("Stop button clicked!\n");
+        }
+        ImVec2 windowSize = ImGui::GetWindowSize();
+        float buttonWidth = ImGui::CalcTextSize("Exit").x + ImGui::GetStyle().FramePadding.x * 2;
+        ImGui::SetCursorPos(ImVec2(windowSize.x - buttonWidth - 25, windowSize.y - ImGui::GetFrameHeightWithSpacing()));
+        if (ImGui::Button("Exit")) 
+        {
+            CleanupOpenAL();
+            ImGui_ImplOpenGL3_Shutdown();
+            ImGui_ImplGlfw_Shutdown();
+            ImGui::DestroyContext();
+        
+            glfwDestroyWindow(window);
+            glfwTerminate();
+        }
+
+        
+        ImVec2 textSize = ImGui::CalcTextSize("Made by Flartiks");
+        ImGui::SetCursorPos(ImVec2(windowSize.x - buttonWidth - 200, windowSize.y - ImGui::GetFrameHeightWithSpacing()));
+        ImGui::Text("Made by Flartiks");
+
+        ImGui::End();
+
+        ImGui::Render();
+        int display_w, display_h;
+        glfwGetFramebufferSize(window, &display_w, &display_h);
+        glViewport(0, 0, display_w, display_h);
+        glClearColor(0.0f, 0.0f, 0.0f, 0.0f); 
+        glClear(GL_COLOR_BUFFER_BIT);
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+        glfwSwapBuffers(window);
+    }
+
+    CleanupOpenAL();
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplGlfw_Shutdown();
+    ImGui::DestroyContext();
+
+    glfwDestroyWindow(window);
+    glfwTerminate();
+
+    return 0;
+}
