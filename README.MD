@@ -51,4 +51,4 @@ Please see the `LICENSES` directory for more information.
 - After building, navigate to the `build` directory and run exe:
   ```bash
   cd build
-  ./fastPlayMP3
+  ./fastPlayMP3.exe
