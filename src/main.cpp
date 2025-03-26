@@ -11,6 +11,7 @@
 #include "ImGuiFileDialog.h"
 #include <filesystem>
 #include <vector>
+#include <iostream>
 using std::string;
 
 std::vector<std::string> mp3Files; // Список MP3-файлов
@@ -49,6 +50,7 @@ GLuint LoadTextureFromFile(const char* filename) {
 }
 
 int main(int, char**) {
+    
     glfwSetErrorCallback(glfw_error_callback);
     if (!glfwInit())
         return 1;
