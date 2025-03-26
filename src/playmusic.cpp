@@ -1,5 +1,6 @@
 #include "playmusic.h"
 #include <iostream>
+#include <cstring>
 
 ALCdevice* device;
 ALCcontext* context;
@@ -32,6 +33,12 @@ void CleanupOpenAL()
 
 bool LoadMP3File(const char* filename, ALuint* buffer)
 {
+    if (!filename || strlen(filename) == 0)
+    {
+        std::cerr << "Error: File path is empty or null." << std::endl;
+        return false;
+    }
+
     mpg123_handle *mh;
     unsigned char *audio;
     size_t done;
@@ -89,7 +96,6 @@ bool LoadMP3File(const char* filename, ALuint* buffer)
         return false;
     }
 
-    // Check if the rate is valid
     if (rate <= 0)
     {
         std::cerr << "Invalid sample rate: " << rate << std::endl;
@@ -103,6 +109,7 @@ bool LoadMP3File(const char* filename, ALuint* buffer)
         std::cerr << "OpenAL error after setting buffer data: " << error << std::endl;
         return false;
     }
+    std::cout << "Load file successful: " << filename << std::endl;
 
     return true;
 }

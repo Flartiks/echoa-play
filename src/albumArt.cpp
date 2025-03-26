@@ -34,4 +34,3 @@ void extractCoverArt(const std::string &audioFilePath, const std::string &output
 
     std::cout << "Cover art extracted to: " << outputImagePath << std::endl;
 }
-

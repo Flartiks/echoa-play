@@ -90,6 +90,8 @@ int main(int, char**)
 
     GLuint albumArtTexture = 0;
 
+    bool isLoaded = false;
+
     while (!glfwWindowShouldClose(window))
     {
         glfwPollEvents();
@@ -110,33 +112,49 @@ int main(int, char**)
 
         if (ImGui::Button("Load File")) {
             std::cout << "Load File button clicked" << std::endl;
+        
             if (strcmp(audiopath, audioFilePath.c_str()) != 0) {
                 audioFilePath = audiopath;
+        
+                if (audioFilePath.empty()) {
+                    std::cerr << "Error: File path is empty." << std::endl;
+                    ImGui::Text("Error: File path is empty.");
+                }
+        
                 std::cout << "Attempting to load file: " << audioFilePath << std::endl;
+    
                 CleanupOpenAL();
                 if (!InitOpenAL()) {
-                    fprintf(stderr, "Failed to initialize OpenAL\n");
-                    continue;
+                    std::cerr << "Failed to initialize OpenAL" << std::endl;
+                    ImGui::Text("Error: Failed to initialize OpenAL.");
                 }
+        
                 ReadMP3Tags(audioFilePath.c_str(), &title, &artist, &album, &year);
+        
                 std::string imagePath = audioFilePath.substr(0, audioFilePath.size() - 4) + ".png";
                 extractCoverArt(audioFilePath, imagePath);
-                
+        
                 if (!LoadMP3File(audioFilePath.c_str(), &buffer)) {
-                    fprintf(stderr, "Failed to load audio file\n");
-                    continue;
+                    std::cerr << "Failed to load audio file: " << audioFilePath << std::endl;
+                    ImGui::Text("Error: Failed to load audio file. Please check the file path or format.");
+                    isLoaded = false;
+                } else isLoaded = true;
+        
+                alSourceStop(source);
+                alSourcei(source, AL_BUFFER, 0);
+                alSourcei(source, AL_BUFFER, buffer);
+                ALenum error = alGetError();
+                if (error != AL_NO_ERROR) {
+                    std::cerr << "OpenAL error after setting buffer: " << error << std::endl;
+                    ImGui::Text("Error: OpenAL buffer error.");
+                }
+                
+                albumArtTexture = LoadTextureFromFile(imagePath.c_str());
+                if (albumArtTexture == 0) {
+                    std::cerr << "Failed to load album art texture: " << imagePath << std::endl;
+                    ImGui::Text("Error: Failed to load album art texture. Please check the file path or format.");
                 } else {
-                    std::cout << "File loaded successfully" << std::endl;
-                    alSourceStop(source);
-                    alSourcei(source, AL_BUFFER, 0); 
-                    alSourcei(source, AL_BUFFER, buffer);
-                    ALenum error = alGetError();
-                    if (error != AL_NO_ERROR) {
-                        std::cerr << "OpenAL error after setting buffer: " << error << std::endl;
-                    } else {
-                        std::cout << "Buffer set successfully" << std::endl;
-                    }    
-                    albumArtTexture = LoadTextureFromFile(imagePath.c_str());
+                    std::cout << "Album art texture loaded successfully: " << imagePath << std::endl;
                 }
             }
         }
@@ -144,13 +162,25 @@ int main(int, char**)
 
         if (ImGui::Button("Play"))
         {
-            alSourcePlay(source);
-            printf("Play button clicked!\n");
+            if(!isLoaded) {
+                std::cerr << "Error: No file loaded." << std::endl;
+                ImGui::Text("Error: No file loaded.");
+            } else {
+                std::cout << "Play button clicked!" << std::endl;
+                alSourcePlay(source);
+                std::cout << "Play file successful!: " << audioFilePath << std::endl;
+            }
         }
         if (ImGui::Button("Stop"))
         {
-            alSourceStop(source);
-            printf("Stop button clicked!\n");
+            if(!isLoaded) {
+                std::cerr << "Error: No file loaded." << std::endl;
+                ImGui::Text("Error: No file loaded.");
+            } else {
+                printf("Stop button clicked!\n");
+                alSourceStop(source);
+                printf("Stop file successful!: %s\n", audioFilePath.c_str());
+            }
         }
         ImVec2 windowSize = ImGui::GetWindowSize();
         float buttonWidth = ImGui::CalcTextSize("Exit").x + ImGui::GetStyle().FramePadding.x * 2;
