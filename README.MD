@@ -1,12 +1,12 @@
 ## fastPlayMP3 - Version 1.1
 
-This is the 1.1 version of the fastPlayMP3. Added album art extractor.
+This is the 1.4 version of the fastPlayMP3. 
 
-![Player Screenshot](screenshots/player1.1.png)
+![Player Screenshot](screenshots/player1.4.png)
 
 ## License
 
-This project is licensed under the MIT License. See the `LICENSE` file for details.
+This project is licensed under the Apache License 2.0. See the `LICENSE` file for details.
 
 ## Third-Party Libraries
 
@@ -14,6 +14,7 @@ This project uses the following third-party libraries:
 
 - **GLFW**: Licensed under the zlib/libpng license.
 - **ImGui**: Licensed under the MIT License.
+- **ImGuiFileDialog**: Licensed under the MIT License.
 - **OpenAL**: Licensed under the LGPL.
 - **libmpg123**: Licensed under the LGPL.
 - **TagLib**: Licensed under the LGPL and MPL.
