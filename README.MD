@@ -1,6 +1,6 @@
 ## fastPlayMP3 - Version 1.1
 
-This is the 1.4 version of the fastPlayMP3. 
+This is the 1.5 version of the fastPlayMP3. 
 
 ![Player Screenshot](screenshots/player1.4.png)
 
@@ -18,6 +18,9 @@ This project uses the following third-party libraries:
 - **OpenAL**: Licensed under the LGPL.
 - **libmpg123**: Licensed under the LGPL.
 - **TagLib**: Licensed under the LGPL and MPL.
+
+This project uses the followed fonts:
+- **Font-awesome**: Licensed under the MIT license.
 
 Please see the `LICENSES` directory for more information.
 

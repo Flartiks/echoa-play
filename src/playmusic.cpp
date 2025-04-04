@@ -113,3 +113,44 @@ bool LoadMP3File(const char* filename, ALuint* buffer)
 
     return true;
 }
+
+float GetTrackLength(const std::string& filePath) {
+    mpg123_handle* mh = mpg123_new(NULL, NULL);
+    if (!mh) {
+        std::cerr << "Failed to initialize mpg123" << std::endl;
+        return 0.0f;
+    }
+
+    if (mpg123_open(mh, filePath.c_str()) != MPG123_OK) {
+        std::cerr << "Failed to open MP3 file: " << filePath << std::endl;
+        mpg123_delete(mh);
+        return 0.0f;
+    }
+
+    // Получаем общее количество фреймов
+    off_t totalFrames = mpg123_length(mh);
+    if (totalFrames <= 0) {
+        std::cerr << "Failed to get total frames" << std::endl;
+        mpg123_close(mh);
+        mpg123_delete(mh);
+        return 0.0f;
+    }
+
+    // Получаем частоту дискретизации (в герцах)
+    long rate;
+    int channels, encoding;
+    if (mpg123_getformat(mh, &rate, &channels, &encoding) != MPG123_OK) {
+        std::cerr << "Failed to get MP3 format" << std::endl;
+        mpg123_close(mh);
+        mpg123_delete(mh);
+        return 0.0f;
+    }
+
+    // Рассчитываем длину трека в секундах
+    double trackLength = static_cast<double>(totalFrames) / static_cast<double>(rate);
+
+    mpg123_close(mh);
+    mpg123_delete(mh);
+
+    return static_cast<float>(trackLength); // Возвращаем длину в секундах
+}

@@ -7,12 +7,14 @@
 #include <vector>
 #include <cstdio>
 #include <cstdlib> 
+#include <string>
 
 bool InitOpenAL();
 
 void CleanupOpenAL();
 
 bool LoadMP3File(const char* filename, ALuint* buffer);
+float GetTrackLength(const std::string& filePath);
 
 extern ALCdevice* device;
 extern ALCcontext* context;

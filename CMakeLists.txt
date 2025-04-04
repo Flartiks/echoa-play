@@ -5,6 +5,9 @@ project(fastPlayMP3)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+set(FONT_AWESOME_PATH "${CMAKE_CURRENT_SOURCE_DIR}/fonts/fontawesome-free-6.7.2-desktop/otfs/Font Awesome 6 Free-Solid-900.otf")
+add_definitions(-DFONT_AWESOME_PATH="${FONT_AWESOME_PATH}")
+
 if(MSVC)
     add_compile_options(/utf-8)
 else()
@@ -34,7 +37,6 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(ImGuiFileDialog)
 
-# Add SOIL library
 FetchContent_Declare(
   soil
   GIT_REPOSITORY https://github.com/littlstar/soil.git
