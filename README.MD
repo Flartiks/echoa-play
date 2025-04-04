@@ -1,8 +1,8 @@
-## fastPlayMP3 - Version 1.1
+## fastPlayMP3 - Version 1.5
 
 This is the 1.5 version of the fastPlayMP3. 
 
-![Player Screenshot](screenshots/player1.4.png)
+![Player Screenshot](screenshots/player1.5.png)
 
 ## License
 
