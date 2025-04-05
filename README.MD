@@ -1,4 +1,4 @@
-## fastPlayMP3 - Version 1.5
+## fastPlayMP3 - Version 1.5 (only win)
 
 This is the 1.5 version of the fastPlayMP3. 
 
