@@ -15,11 +15,36 @@
 #include <iostream>
 #include <shlobj.h> 
 #include <shobjidl.h> 
+#include <random>
 using std::string;
+
+static bool isRepeat = false;
+static bool isShuffle = false;
+bool isPlayNext = true;
 
 std::vector<std::string> mp3Files; 
 std::string selectedDirectory;    
 std::string selectedFile;         
+std::vector<std::string> remainingTracks;
+
+void LoadRubikFont(ImGuiIO& io) {
+    const char* rubikFontPath = RUBIK_FONT_PATH; 
+    float fontSize = 16.0f; 
+
+    ImFont* rubikFont = io.Fonts->AddFontFromFileTTF(rubikFontPath, fontSize);
+    if (rubikFont == nullptr) {
+        std::cerr << "Failed to load Rubik font from: " << rubikFontPath << std::endl;
+    } else {
+        std::cout << "Rubik font loaded successfully from: " << rubikFontPath << std::endl;
+    }
+}
+
+void InitializeRemainingTracks() {
+    remainingTracks = mp3Files; 
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::shuffle(remainingTracks.begin(), remainingTracks.end(), gen); 
+}
 
 static bool isPlaying = false;
 
@@ -153,6 +178,7 @@ int main(int, char**) {
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO(); (void)io;
     LoadFontAwesome(io);
+    LoadRubikFont(io);
     ImGui::StyleColorsDark();
 
     ImGuiStyle& style = ImGui::GetStyle();
@@ -201,11 +227,10 @@ int main(int, char**) {
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
-
+        ImGui::PushFont(io.Fonts->Fonts[1]);
         ImGui::SetNextWindowSize(ImVec2(445, 400));
         ImGui::Begin("echoa-play", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoBringToFrontOnFocus); 
         ImGui::SetWindowPos(ImVec2(50, 50), ImGuiCond_FirstUseEver);
-        
         ImVec2 albumArtSize = ImVec2(150, 150); 
         ImVec2 cursorPos = ImGui::GetCursorScreenPos(); 
 
@@ -236,7 +261,7 @@ int main(int, char**) {
             ImGui::Text("No file loaded.");
         }
         ImGui::EndGroup();
-
+        
         ImGui::SameLine(405);
         ImGui::BeginGroup();
         static float volume = 0.5f; 
@@ -273,40 +298,38 @@ int main(int, char**) {
         ImGui::PopItemWidth(); 
 
         ImGui::SetCursorPos(ImVec2(171, 153)); 
-        
+        ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0.f, 10.f));
+        ImGui::PushFont(io.Fonts->Fonts[0]);
         if (ImGui::Button(u8"\uf048", ImVec2(70, 30))) { 
             if (!mp3Files.empty()) {
-                auto it = std::find(mp3Files.begin(), mp3Files.end(), selectedFile);
-                if (it != mp3Files.end() && it != mp3Files.begin()) {
-                    --it; 
-                    selectedFile = *it;
-                    std::cout << "Switched to previous track: " << selectedFile << std::endl;
-
-                    currentTime = 0.0f;
-                    isPlaying = false;
-
-                    audioFilePath = selectedFile;
-                    CleanupOpenAL();
-                    if (!InitOpenAL()) {
-                        std::cerr << "Failed to initialize OpenAL" << std::endl;
-                        isLoaded = false;
-                    } else if (!LoadMP3File(audioFilePath.c_str(), &buffer)) {
-                        std::cerr << "Failed to load audio file: " << audioFilePath << std::endl;
-                        isLoaded = false;
-                    } else {
-                        isLoaded = true;
-                        alSourcei(source, AL_BUFFER, buffer);
-                        alSourcef(source, AL_GAIN, volume);
-                        ReadMP3Tags(audioFilePath.c_str(), &title, &artist, &album, &year);
-                        std::string imagePath = audioFilePath.substr(0, audioFilePath.size() - 4) + ".png";
-                        extractCoverArt(audioFilePath, imagePath);
-                        albumArtTexture = LoadTextureFromFile(imagePath.c_str());
-                        if (albumArtTexture == 0) {
-                            std::cerr << "Failed to load album art texture: " << imagePath << std::endl;
-                        } else {
-                            std::cout << "Album art texture loaded successfully: " << imagePath << std::endl;
-                        }
+                if (isShuffle) {
+                    if (remainingTracks.empty()) {
+                        InitializeRemainingTracks(); 
                     }
+                    selectedFile = remainingTracks.back(); 
+                    remainingTracks.pop_back(); 
+                } else {
+                    auto it = std::find(mp3Files.begin(), mp3Files.end(), selectedFile);
+                    if (it != mp3Files.end() && it != mp3Files.begin()) {
+                        --it;
+                        selectedFile = *it;
+                    }
+                }
+                audioFilePath = selectedFile;
+                currentTime = 0.0f;
+                CleanupOpenAL();
+                if (!InitOpenAL() || !LoadMP3File(audioFilePath.c_str(), &buffer)) {
+                    isLoaded = false;
+                } else {
+                    isLoaded = true;
+                    alSourcei(source, AL_BUFFER, buffer);
+                    alSourcef(source, AL_GAIN, volume);
+                    ReadMP3Tags(audioFilePath.c_str(), &title, &artist, &album, &year);
+                    std::string imagePath = audioFilePath.substr(0, audioFilePath.size() - 4) + ".png";
+                    extractCoverArt(audioFilePath, imagePath);
+                    albumArtTexture = LoadTextureFromFile(imagePath.c_str());
+                    alSourcePlay(source); 
+                    isPlaying = true;
                 }
             }
         }
@@ -332,22 +355,88 @@ int main(int, char**) {
         ImGui::SameLine();
         if (ImGui::Button(u8"\uf051", ImVec2(70, 30))) { 
             if (!mp3Files.empty()) {
-                auto it = std::find(mp3Files.begin(), mp3Files.end(), selectedFile);
-                if (it != mp3Files.end() && it != mp3Files.end() - 1) {
-                    ++it; 
-                    selectedFile = *it;
-                    std::cout << "Switched to next track: " << selectedFile << std::endl;
+                if (isShuffle) {
+                    if (remainingTracks.empty()) {
+                        InitializeRemainingTracks(); 
+                    }
+                    selectedFile = remainingTracks.back(); 
+                    remainingTracks.pop_back(); 
+                } else {
+                    auto it = std::find(mp3Files.begin(), mp3Files.end(), selectedFile);
+                    if (it != mp3Files.end() && it != mp3Files.end() - 1) {
+                        ++it;
+                        selectedFile = *it;
+                    }
+                }
+                audioFilePath = selectedFile;
+                currentTime = 0.0f;
+                CleanupOpenAL();
+                if (!InitOpenAL() || !LoadMP3File(audioFilePath.c_str(), &buffer)) {
+                    isLoaded = false;
+                } else {
+                    isLoaded = true;
+                    alSourcei(source, AL_BUFFER, buffer);
+                    alSourcef(source, AL_GAIN, volume);
+                    ReadMP3Tags(audioFilePath.c_str(), &title, &artist, &album, &year);
+                    std::string imagePath = audioFilePath.substr(0, audioFilePath.size() - 4) + ".png";
+                    extractCoverArt(audioFilePath, imagePath);
+                    albumArtTexture = LoadTextureFromFile(imagePath.c_str());
+                    alSourcePlay(source); 
+                    isPlaying = true;
+                }
+            }
+        }
 
-                    currentTime = 0.0f;
-                    isPlaying = false;
+        
+        ImGui::SetCursorPos(ImVec2(327, 117)); 
+        if (isRepeat) {
+            ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.0f, 0.0f, 1.0f, 1.0f)); 
+        } else {
+            ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(1.0f, 0.0f, 0.0f, 1.0f)); 
+        }
+        if (ImGui::Button(u8"\uf074", ImVec2(70, 30))) {
+            isRepeat = !isRepeat;
+        }
+        ImGui::PopStyleColor();
 
+        ImGui::SetCursorPos(ImVec2(327, 82));
+        if (isShuffle) {
+            ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.0f, 0.0f, 1.0f, 1.0f)); 
+        } else {
+            ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(1.0f, 0.0f, 0.0f, 1.0f)); 
+        }
+        if (ImGui::Button(u8"\uf01e", ImVec2(70, 30))) {
+            isShuffle = !isShuffle;
+        }
+        ImGui::PopStyleColor();
+        ImGui::PopFont();
+        if (isLoaded) {
+            ALint state;
+            alGetSourcei(source, AL_SOURCE_STATE, &state);
+            if (state == AL_STOPPED) {
+                if (isRepeat) {
+                    alSourcePlay(source); 
+                } else {
+                    if (isShuffle) {
+                        if (remainingTracks.empty()) {
+                            InitializeRemainingTracks(); 
+                        }
+                        selectedFile = remainingTracks.back();
+                        remainingTracks.pop_back();
+                    } else {
+                        auto it = std::find(mp3Files.begin(), mp3Files.end(), selectedFile);
+                        if (it != mp3Files.end() && it != mp3Files.end() - 1) {
+                            ++it;
+                            selectedFile = *it;
+                        } else {
+                            
+                            isPlayNext = false;
+                            isPlaying = false;
+                        }
+                    }
                     audioFilePath = selectedFile;
                     CleanupOpenAL();
-                    if (!InitOpenAL()) {
-                        std::cerr << "Failed to initialize OpenAL" << std::endl;
-                        isLoaded = false;
-                    } else if (!LoadMP3File(audioFilePath.c_str(), &buffer)) {
-                        std::cerr << "Failed to load audio file: " << audioFilePath << std::endl;
+                    if (!InitOpenAL() || !LoadMP3File(audioFilePath.c_str(), &buffer)) {
                         isLoaded = false;
                     } else {
                         isLoaded = true;
@@ -357,17 +446,21 @@ int main(int, char**) {
                         std::string imagePath = audioFilePath.substr(0, audioFilePath.size() - 4) + ".png";
                         extractCoverArt(audioFilePath, imagePath);
                         albumArtTexture = LoadTextureFromFile(imagePath.c_str());
-                        if (albumArtTexture == 0) {
-                            std::cerr << "Failed to load album art texture: " << imagePath << std::endl;
+                        if(isPlayNext) {
+                            alSourcePlay(source); 
                         } else {
-                            std::cout << "Album art texture loaded successfully: " << imagePath << std::endl;
-                        }
+                            alSourceStop(source);
+                        }  
+                        isPlayNext = true;
+
+                        isPlaying = true;
                     }
                 }
             }
         }
 
-        ImGui::SetCursorPosY(ImGui::GetWindowHeight() - 175); 
+        ImGui::PopStyleVar();
+        ImGui::SetCursorPosY(ImGui::GetWindowHeight() - 170); 
         if (ImGui::Button("Choose File", ImVec2(100, 30))) {
             std::string selectedFile = OpenFileDialog();
             if (!selectedFile.empty()) {
@@ -465,7 +558,7 @@ int main(int, char**) {
         } else {
             ImGui::Text("No MP3 files found.");
         }
-
+        ImGui::PopFont();
         ImGui::End();
         ImGui::Render();
         int display_w, display_h;

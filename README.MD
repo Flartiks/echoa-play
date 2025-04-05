@@ -1,8 +1,8 @@
-## fastPlayMP3 - Version 1.5 (only windows)
+## fastPlayMP3 - Version 1.5.2 (only windows)
 
-This is the 1.5 version of the fastPlayMP3. 
+This is the 1.5.2 version of the fastPlayMP3.
 
-![Player Screenshot](screenshots/player1.5.png)
+![Player Screenshot](screenshots/player1.5.2.png)
 
 ## License
 
@@ -20,6 +20,7 @@ This project uses the following third-party libraries:
 
 This project uses the followed fonts:
 - **Font-awesome**: Licensed under the MIT license.
+- **Rubik**: Licensed under the OFL license.
 
 Please see the `LICENSES` directory for more information.
 

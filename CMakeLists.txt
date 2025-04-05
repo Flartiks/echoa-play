@@ -7,6 +7,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(FONT_AWESOME_PATH "${CMAKE_CURRENT_SOURCE_DIR}/fonts/fontawesome-free-6.7.2-desktop/otfs/Font Awesome 6 Free-Solid-900.otf")
 add_definitions(-DFONT_AWESOME_PATH="${FONT_AWESOME_PATH}")
+set(RUBIK_FONT_PATH "${CMAKE_CURRENT_SOURCE_DIR}/fonts/rubik/Rubik-Regular.ttf")
+add_definitions(-DRUBIK_FONT_PATH="${RUBIK_FONT_PATH}")
 
 if(MSVC)
     add_compile_options(/utf-8)
