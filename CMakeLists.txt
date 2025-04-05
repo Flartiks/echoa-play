@@ -31,13 +31,6 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(imgui)
 
 FetchContent_Declare(
-  ImGuiFileDialog
-  GIT_REPOSITORY https://github.com/aiekick/ImGuiFileDialog.git
-  GIT_TAG master
-)
-FetchContent_MakeAvailable(ImGuiFileDialog)
-
-FetchContent_Declare(
   soil
   GIT_REPOSITORY https://github.com/littlstar/soil.git
   GIT_TAG master
@@ -58,7 +51,6 @@ target_sources(${PROJECT_NAME} PRIVATE
     ${imgui_SOURCE_DIR}/imgui_widgets.cpp
     ${imgui_SOURCE_DIR}/backends/imgui_impl_glfw.cpp
     ${imgui_SOURCE_DIR}/backends/imgui_impl_opengl3.cpp
-    ${ImGuiFileDialog_SOURCE_DIR}/ImGuiFileDialog.cpp
 )
 
 set(OPENAL_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/include/OpenAL")
@@ -70,7 +62,6 @@ set(TAGLIB_LIBRARY_DIR "${CMAKE_CURRENT_SOURCE_DIR}/lib/taglib")
 target_include_directories(${PROJECT_NAME} PRIVATE
     ${imgui_SOURCE_DIR}
     ${imgui_SOURCE_DIR}/backends
-    ${ImGuiFileDialog_SOURCE_DIR}
     ${OPENAL_INCLUDE_DIR}
     "${CMAKE_CURRENT_SOURCE_DIR}/include"
     ${soil_SOURCE_DIR}/src
@@ -78,12 +69,6 @@ target_include_directories(${PROJECT_NAME} PRIVATE
     ${TAGLIB_INCLUDE_DIR}
 )
 
-# Добавляем include-директорию для ImGuiFileDialog
-target_include_directories(ImGuiFileDialog PUBLIC
-    ${imgui_SOURCE_DIR}
-)
-
-# Build SOIL library
 add_library(SOIL STATIC
     ${soil_SOURCE_DIR}/src/SOIL.c
     ${soil_SOURCE_DIR}/src/image_DXT.c
