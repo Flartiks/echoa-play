@@ -143,7 +143,7 @@ int main(int, char**) {
     glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
     glfwWindowHint(GLFW_TRANSPARENT_FRAMEBUFFER, GLFW_TRUE);
 
-    GLFWwindow* window = glfwCreateWindow(1920, 1079, "fastPlayMP3", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(1920, 1079, "echoa-play", NULL, NULL);
     if (window == NULL)
         return 1;
     glfwMakeContextCurrent(window);
@@ -203,7 +203,7 @@ int main(int, char**) {
         ImGui::NewFrame();
 
         ImGui::SetNextWindowSize(ImVec2(445, 400));
-        ImGui::Begin("fastPlayMP3", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoBringToFrontOnFocus); 
+        ImGui::Begin("echoa-play", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoBringToFrontOnFocus); 
         ImGui::SetWindowPos(ImVec2(50, 50), ImGuiCond_FirstUseEver);
         
         ImVec2 albumArtSize = ImVec2(150, 150); 
