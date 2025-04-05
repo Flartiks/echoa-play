@@ -1,6 +1,4 @@
-## fastPlayMP3 - Version 1.5.2 (only windows)
-
-This is the 1.5.2 version of the fastPlayMP3.
+## echoa-play - Version 1.5.2 (only windows)
 
 ![Player Screenshot](screenshots/player1.5.2.png)
 
