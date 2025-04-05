@@ -14,7 +14,6 @@ This project uses the following third-party libraries:
 
 - **GLFW**: Licensed under the zlib/libpng license.
 - **ImGui**: Licensed under the MIT License.
-- **ImGuiFileDialog**: Licensed under the MIT License.
 - **OpenAL**: Licensed under the LGPL.
 - **libmpg123**: Licensed under the LGPL.
 - **TagLib**: Licensed under the LGPL and MPL.
