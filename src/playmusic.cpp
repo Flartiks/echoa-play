@@ -127,7 +127,6 @@ float GetTrackLength(const std::string& filePath) {
         return 0.0f;
     }
 
-    // Получаем общее количество фреймов
     off_t totalFrames = mpg123_length(mh);
     if (totalFrames <= 0) {
         std::cerr << "Failed to get total frames" << std::endl;
@@ -136,7 +135,6 @@ float GetTrackLength(const std::string& filePath) {
         return 0.0f;
     }
 
-    // Получаем частоту дискретизации (в герцах)
     long rate;
     int channels, encoding;
     if (mpg123_getformat(mh, &rate, &channels, &encoding) != MPG123_OK) {
@@ -146,11 +144,10 @@ float GetTrackLength(const std::string& filePath) {
         return 0.0f;
     }
 
-    // Рассчитываем длину трека в секундах
     double trackLength = static_cast<double>(totalFrames) / static_cast<double>(rate);
 
     mpg123_close(mh);
     mpg123_delete(mh);
 
-    return static_cast<float>(trackLength); // Возвращаем длину в секундах
+    return static_cast<float>(trackLength);
 }

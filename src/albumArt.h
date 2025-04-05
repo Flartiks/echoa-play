@@ -9,7 +9,6 @@
 #include <taglib/attachedpictureframe.h>
 #include <iostream>
 
-// Функция для извлечения обложки альбома и сохранения в файл
 void extractCoverArt(const std::string &audioFilePath, const std::string &outputImagePath);
 
 #endif // ALBUMART_H

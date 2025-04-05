@@ -38,7 +38,6 @@ void ReadMP3Tags(const char* filename, string* title, string* artist, string* al
         std::cerr << "Failed to open file: " << filename << std::endl;
     }
 
-    // Clean up
     mpg123_close(mh);
     mpg123_delete(mh);
     mpg123_exit();
