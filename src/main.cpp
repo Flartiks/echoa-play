@@ -388,24 +388,24 @@ int main(int, char**) {
         }
 
         
-        ImGui::SetCursorPos(ImVec2(327, 117)); 
+        ImGui::SetCursorPos(ImVec2(367, 117)); 
         if (isRepeat) {
-            ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.0f, 0.0f, 1.0f, 1.0f)); 
+            ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.1f, 0.3f, 0.7f, 1.0f)); 
         } else {
-            ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(1.0f, 0.0f, 0.0f, 1.0f)); 
+            ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.2f, 0.2f, 0.2f, 1.0f)); 
         }
-        if (ImGui::Button(u8"\uf074", ImVec2(70, 30))) {
+        if (ImGui::Button(u8"\uf074", ImVec2(30, 30))) {
             isRepeat = !isRepeat;
         }
         ImGui::PopStyleColor();
 
-        ImGui::SetCursorPos(ImVec2(327, 82));
+        ImGui::SetCursorPos(ImVec2(367, 82));
         if (isShuffle) {
-            ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.0f, 0.0f, 1.0f, 1.0f)); 
+            ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.1f, 0.3f, 0.7f, 1.0f)); 
         } else {
-            ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(1.0f, 0.0f, 0.0f, 1.0f)); 
+            ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.2f, 0.2f, 0.2f, 1.0f)); 
         }
-        if (ImGui::Button(u8"\uf01e", ImVec2(70, 30))) {
+        if (ImGui::Button(u8"\uf01e", ImVec2(30, 30))) {
             isShuffle = !isShuffle;
         }
         ImGui::PopStyleColor();
