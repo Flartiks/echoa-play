@@ -109,8 +109,6 @@ bool LoadMP3File(const char* filename, ALuint* buffer)
         std::cerr << "OpenAL error after setting buffer data: " << error << std::endl;
         return false;
     }
-    std::cout << "Load file successful: " << filename << std::endl;
-
     return true;
 }
 

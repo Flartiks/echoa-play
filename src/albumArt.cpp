@@ -31,6 +31,4 @@ void extractCoverArt(const std::string &audioFilePath, const std::string &output
     std::ofstream outFile(outputImagePath, std::ios::binary);
     outFile.write(coverArtFrame->picture().data(), coverArtFrame->picture().size());
     outFile.close();
-
-    std::cout << "Cover art extracted to: " << outputImagePath << std::endl;
 }

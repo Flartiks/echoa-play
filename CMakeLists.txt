@@ -1,20 +1,14 @@
 cmake_minimum_required(VERSION 3.14)
 
-project(echoa-play)
+project(echoa-prem)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(FONT_AWESOME_PATH "${CMAKE_CURRENT_SOURCE_DIR}/fonts/fontawesome-free-6.7.2-desktop/otfs/Font Awesome 6 Free-Solid-900.otf")
 add_definitions(-DFONT_AWESOME_PATH="${FONT_AWESOME_PATH}")
-set(RUBIK_FONT_PATH "${CMAKE_CURRENT_SOURCE_DIR}/fonts/rubik/Rubik-Regular.ttf")
+set(RUBIK_FONT_PATH "${CMAKE_CURRENT_SOURCE_DIR}/fonts/rubik/Rubik-Medium.ttf")
 add_definitions(-DRUBIK_FONT_PATH="${RUBIK_FONT_PATH}")
-
-if(MSVC)
-    add_compile_options(/utf-8)
-else()
-    add_compile_options(-finput-charset=UTF-8 -fexec-charset=UTF-8)
-endif()
 
 include(FetchContent)
 
@@ -42,7 +36,12 @@ FetchContent_MakeAvailable(soil)
 find_package(OpenGL REQUIRED)
 
 add_executable(${PROJECT_NAME}
-    src/main.cpp src/playmusic.cpp src/tagRead.cpp src/albumArt.cpp
+    src/main.cpp
+    src/playmusic.cpp src/playmusic.h
+    src/tagRead.cpp src/tagRead.h
+    src/albumArt.cpp src/albumArt.h
+    src/loadFonts.cpp src/loadFonts.h
+    src/files.cpp src/files.h
     resources/resources.rc
 )
 
@@ -90,3 +89,5 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     SOIL
     OpenGL::GL
 )
+
+add_compile_options(-finput-charset=UTF-8 -fexec-charset=UTF-8)
