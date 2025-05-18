@@ -1,8 +1,8 @@
 #ifndef PLAYMUSIC_H
 #define PLAYMUSIC_H
 
-#include <AL/al.h>
-#include <AL/alc.h>
+#include <al.h>
+#include <alc.h>
 #include <mpg123.h>
 #include <vector>
 #include <cstdio>
