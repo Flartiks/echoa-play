@@ -7,7 +7,8 @@
 #include <windows.h>
 #include <commdlg.h>
 #include <filesystem>
-
+#include <codecvt>
+#include <locale>
 
 std::string OpenFileDialog();
 std::string OpenFolderDialogWithIFileDialog();

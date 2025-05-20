@@ -1,4 +1,4 @@
-## echoa-prem - mp3 player.
+## echoa-play - mp3 player
 
 ![Player Screenshot](screenshots/echoa-prem.png)
 
@@ -39,7 +39,7 @@ Please see the `LICENSES` directory for more information.
      cmake -B build
      cmake --build build
      ```
-   - The executable will be generated at `build/echoa-prem.exe`.
+   - The executable will be generated at `build/echoa-play.exe`.
 
 2. **Building with MinGW**:
    - If you are using MinGW, use the following commands:
@@ -47,11 +47,11 @@ Please see the `LICENSES` directory for more information.
      cmake -B build -G "MinGW Makefiles"
      cmake --build build
      ```
-   - The executable will be generated at `build/echoa-prem.exe`.
+   - The executable will be generated at `build/echoa-play.exe`.
 
 ### Running the Application
 
 - After building, navigate to the `build` directory and run exe:
   ```bash
   cd build
-  ./echoa-prem.exe
+  ./echoa-play.exe
