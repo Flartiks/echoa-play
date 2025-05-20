@@ -1,6 +1,6 @@
 ## echoa-play - mp3 player
 
-![Player Screenshot](screenshots/echoa-prem.png)
+![Player Screenshot](screenshots/echoa-play-2025-20-05.png)
 
 ## License
 

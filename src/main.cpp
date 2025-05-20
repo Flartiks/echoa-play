@@ -170,6 +170,7 @@ int main(int, char**) {
     LoadRubikFont(io);
     ImGui::StyleColorsDark();
     io.IniFilename = NULL;
+    
 
     
     ImGuiStyle& style = ImGui::GetStyle();
